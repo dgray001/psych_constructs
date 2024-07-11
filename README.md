@@ -7,7 +7,7 @@ Run dev server:\
 `mvn spring-boot:run`
 
 Run packaged:\
-`mvn build`
+`mvn build`\
 `java -jar target/backend-0.0.1-SNAPSHOT.jar`
 
 ### Frontend
