@@ -1,6 +1,7 @@
 
 v0.0.3: Protobuf and Vuejs frontend hello world
 
+
 ### Backend
 
 Run dev server:\
@@ -9,6 +10,7 @@ Run dev server:\
 Run packaged:\
 `mvn build`\
 `java -jar target/backend-0.0.1-SNAPSHOT.jar`
+
 
 ### Frontend
 
@@ -25,4 +27,4 @@ Build static site:\
 ### Model
 
 Compile protobuf types:\
-`protoc --java_out=../backend/src/main/java/fyi/lnz/psych_constructs/model/proto ./addressbook.proto`
+`protoc --java_out=../backend/src/main/java/fyi/lnz/psych_constructs/model/proto ./test.proto`
