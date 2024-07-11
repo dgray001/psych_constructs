@@ -1,5 +1,5 @@
 
-v0.0.3: Protobuf and Vuejs frontend hello world
+v0.0.4: Dev proxy server setup
 
 
 ### Backend
@@ -22,6 +22,9 @@ Format code:\
 
 Build static site:\
 `npm run build`
+
+Run dev server:\
+`npm run dev`
 
 
 ### Model

@@ -14,7 +14,7 @@ public class TestController {
 	private static final String template = "Hello, %s!";
 	private final AtomicInteger counter = new AtomicInteger();
 
-	@GetMapping("/test")
+	@GetMapping("/api/test")
 	public byte[] greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
 		return Person.newBuilder().setName(String.format(template, name)).setId(counter.incrementAndGet()).build().toByteArray();
 	}
