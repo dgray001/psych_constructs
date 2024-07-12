@@ -3,7 +3,6 @@ syntax = "proto2";
 package proto;
 
 option java_multiple_files = true;
-option java_outer_classname = "AddressBookProtos";
 
 message Person {
   optional string name = 1;
@@ -23,8 +22,4 @@ message Person {
   }
 
   repeated PhoneNumber phones = 4;
-}
-
-message AddressBook {
-  repeated Person people = 1;
 }

@@ -1,5 +1,4 @@
-
-v0.0.4: Dev proxy server setup
+v0.0.5: Can compile all proto files
 
 
 ### Backend
@@ -29,5 +28,12 @@ Run dev server:\
 
 ### Model
 
-Compile protobuf types:\
-`protoc --java_out=../backend/src/main/java/fyi/lnz/psych_constructs/model/proto ./test.proto`
+Compile protobuf types to backend (from model directory):\
+`protoc --java_out=../backend/src/main/java ./*.proto`
+
+Compile protobuf types to backend (from frontend directory):\
+`npx protoc --ts_out ./proto --proto_path ../model ../model/*.proto`
+
+Note if a proto gets deleted you will need to manually remove it from the proto out folders. To accomplish this in script just delete all out files before compiling
+
+Also note a bash script is provided (compile.sh)
