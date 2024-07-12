@@ -1,4 +1,4 @@
-v0.0.5: Can compile all proto files
+v0.0.6: DB connection
 
 
 ### Backend
@@ -9,6 +9,8 @@ Run dev server:\
 Run packaged:\
 `mvn build`\
 `java -jar target/backend-0.0.1-SNAPSHOT.jar`
+
+The database connection for dev is hardcoded for now until the prod infrastructure is set up
 
 
 ### Frontend
