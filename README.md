@@ -1,4 +1,4 @@
-v0.0.7: Migration logic
+v0.0.8: Backend routes organized
 
 
 ### Backend
