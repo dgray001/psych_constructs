@@ -2,22 +2,151 @@ package fyi.lnz.psych_constructs.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+record QueryResult(boolean success, ResultSet result, String error) {}
+
 @Service
 public class DatabaseConnection {
-  Connection connection;
+  static private String SCHEMA_NAME = "psych_constructs";
+
+  private Connection connection;
 
   DatabaseConnection() {
     try {
       this.connection = DriverManager.getConnection(
-        "jdbc:mariadb://localhost:3306/psych_constructs",
+        "jdbc:mariadb://localhost:3306/" + DatabaseConnection.SCHEMA_NAME,
         "yodan", "Sjf@85882"
       );
+      if (!this.runMigrations()) {
+        this.connection = null; // database is in a corrupt state so prevent further damage
+      }
       System.out.println("Successfully connected to db");
     } catch(Exception e) {
       System.err.println("Could not connect to db: " + e.toString());
+    }
+  }
+
+  private boolean runMigrations() {
+    if (!this.tableExists(Migrations.MIGRATION_TABLE)) {
+      this.query(Migrations.createMigrationTableQuery());
+    }
+    List<String> migrationsRan = new ArrayList<String>();
+    for (Migration m : Migrations.all()) {
+      Row row = this.row(Migrations.MIGRATION_TABLE, "name", m.name());
+      if (row == null) {
+        this.query(
+          "INSERT INTO `%s` (name, description, query) VALUES (?, ?, ?)".formatted(Migrations.MIGRATION_TABLE),
+          new Object[]{m.name(), m.description(), m.query()}
+        );
+      }
+      if (row == null || !(boolean)row.g("migration_run").getKey()) {
+        if (!this.query(m.query()).success()) {
+          System.err.println("Error running migration: %s".formatted(m.name()));
+          return false;
+        }
+        QueryResult result = this.query(
+          "UPDATE `%s` m SET `m`.`migration_run` = TRUE WHERE `m`.`name` = ?".formatted(Migrations.MIGRATION_TABLE),
+          new Object[]{m.name()}
+        );
+        if (!result.success()) {
+          System.err.println("Error updating migration: %s".formatted(m.name()));
+          return false;
+        }
+        migrationsRan.add(m.name());
+      }
+    }
+    System.out.println("Successfully ran migrations: [%s]".formatted(String.join(", ", migrationsRan)));
+    return true;
+  }
+
+  boolean tableExists(String tableName) {
+    QueryResult result = this.query(
+      "SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_name` = ? LIMIT 1;",
+      new Object[]{SCHEMA_NAME, tableName}
+    );
+    if (!result.success()) {
+      return false;
+    }
+    try {
+      return result.result().next();
+    } catch (Exception e) {
+      System.err.println("Error with results when checking if table exists: " + e.toString());
+    }
+    return false;
+  }
+
+  boolean rowExists(String tableName, String columnName, Object param) {
+    QueryResult result = this.query(
+      "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
+      new Object[]{param}
+    );
+    if (!result.success()) {
+      return false;
+    }
+    try {
+      return result.result().next();
+    } catch (Exception e) {
+      System.err.println("Error with results when checking if table exists: " + e.toString());
+    }
+    return false;
+  }
+
+  Row row(String tableName, String columnName, Object param) {
+    QueryResult result = this.query(
+      "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
+      new Object[]{param}
+    );
+    if (!result.success()) {
+      return null;
+    }
+    List<Row> rows = Row.formRows(result.result());
+    if (rows.size() < 1) {
+      return null;
+    } else if (rows.size() > 1) {
+      // option to return something other than first one?
+    }
+    return rows.get(0);
+  }
+
+  QueryResult query(String q) {
+    return this.query(q, new Object[]{});
+  }
+  QueryResult query(String q, Object[] params) {
+    try {
+      this.connection.beginRequest();
+      PreparedStatement ps = this.connection.prepareStatement(q);
+      int i = 1;
+      for (Object param : params) {
+        if (param instanceof Date) {
+          ps.setTimestamp(i++, new Timestamp(((Date) param).getTime()));
+        } else if (param instanceof Integer) {
+          ps.setInt(i++, (Integer) param);
+        } else if (param instanceof Long) {
+          ps.setLong(i++, (Long) param);
+        } else if (param instanceof Double) {
+          ps.setDouble(i++, (Double) param);
+        } else if (param instanceof Float) {
+          ps.setFloat(i++, (Float) param);
+        } else {
+          ps.setString(i++, (String) param);
+        }
+      }
+      System.out.println(ps.toString());
+      ps.execute();
+      ResultSet result = ps.getResultSet();
+      this.connection.endRequest();
+      return new QueryResult(true, result, "");
+    } catch (Exception e) {
+      System.err.println("Query `" + q + "` failed with error: " + e.toString());
+      return new QueryResult(false, null, e.toString());
     }
   }
 }

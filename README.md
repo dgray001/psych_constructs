@@ -1,4 +1,4 @@
-v0.0.6: DB connection
+v0.0.7: Migration logic
 
 
 ### Backend
