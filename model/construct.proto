@@ -1,0 +1,11 @@
+syntax = "proto2";
+
+package proto;
+
+option java_multiple_files = true;
+
+message Construct {
+  optional int64 id = 1;
+  optional string name = 2;
+  optional string description = 3;
+}

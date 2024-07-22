@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package proto;
+
+option java_multiple_files = true;
+
+message Scale {
+  optional int64 id = 1;
+  optional int32 lower = 2;
+  optional int32 upper = 3;
+  optional string lower_string = 4;
+  optional string upper_string = 5;
+  optional string middle_strings = 6;
+}

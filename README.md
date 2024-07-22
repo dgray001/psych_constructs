@@ -1,4 +1,4 @@
-v0.0.8: Backend routes organized
+v0.0.9: Initial model defined
 
 
 ### Backend
