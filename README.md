@@ -1,4 +1,4 @@
-v0.0.9: Initial model defined
+v0.1: Project fully setup
 
 
 ### Backend

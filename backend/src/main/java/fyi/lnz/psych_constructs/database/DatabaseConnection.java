@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import fyi.lnz.psych_constructs.database.migrations.*;
+
 record QueryResult(boolean success, ResultSet result, String error) {}
 
 @Service
@@ -27,6 +29,7 @@ public class DatabaseConnection {
       );
       if (!this.runMigrations()) {
         this.connection = null; // database is in a corrupt state so prevent further damage
+        throw new Exception("Failed to run migrations");
       }
       System.out.println("Successfully connected to db");
     } catch(Exception e) {

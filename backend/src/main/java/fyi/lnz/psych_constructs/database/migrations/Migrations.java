@@ -1,11 +1,11 @@
-package fyi.lnz.psych_constructs.database;
+package fyi.lnz.psych_constructs.database.migrations;
 
-record Migration(String name, String description, String query) {}
+import java.util.stream.Stream;
 
 public class Migrations {
-  static String MIGRATION_TABLE = "migrations_v1";
+  public static String MIGRATION_TABLE = "migrations_v1";
 
-  static String createMigrationTableQuery() {
+  public static String createMigrationTableQuery() {
     return """
     CREATE TABLE `%s` (
       `id` INT NOT NULL AUTO_INCREMENT,
@@ -20,9 +20,10 @@ public class Migrations {
     """.formatted(Migrations.MIGRATION_TABLE);
   }
 
-  static Migration[] all() {
-    return new Migration[]{
-      new Migration("name", "description", "CREATE TABLE yo_momma (id INT);")
-    };
+  public static Migration[] all() {
+    Migration[] table_migrations = Tables.allMigrations();
+    return Stream.of(
+      table_migrations
+    ).flatMap(Stream::of).toArray(Migration[]::new);
   }
 }
