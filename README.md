@@ -1,4 +1,5 @@
-v0.1: Project fully setup
+
+v0.1.1: Can deploy to app engine
 
 
 ### Backend
@@ -7,7 +8,7 @@ Run dev server:\
 `mvn spring-boot:run`
 
 Run packaged:\
-`mvn build`\
+`mvn compile`\
 `java -jar target/backend-0.0.1-SNAPSHOT.jar`
 
 The database connection for dev is hardcoded for now until the prod infrastructure is set up
