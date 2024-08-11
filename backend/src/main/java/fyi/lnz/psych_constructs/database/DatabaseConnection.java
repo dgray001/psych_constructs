@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 import fyi.lnz.psych_constructs.database.migrations.*;
 import fyi.lnz.psych_constructs.util.Constants;
 
-record QueryResult(boolean success, ResultSet result, String error) {}
+record QueryResult(boolean success, ResultSet result, String error) {
+}
 
 @Service
 public class DatabaseConnection {
@@ -22,15 +23,16 @@ public class DatabaseConnection {
 
   DatabaseConnection() {
     try {
-      String s = "%s/%s?user=%s&password=%s".formatted();
-      String s = "jdbc:mysql://162.241.24.125:3306/lnzfyi_psych_constructs?user=lnzfyi_yodan&password=Sjf@85882&useSSL=false";
+      String s = "%s/%s?user=%s&password=%s&useSSL=%s".formatted(Constants.db_ip, Constants.db_name, Constants.db_user,
+          Constants.db_pwd, Constants.db_ssl);
+      System.out.println(s);
       this.connection = DriverManager.getConnection(s);
       if (!this.runMigrations()) {
         this.connection = null; // database is in a corrupt state so prevent further damage
         throw new Exception("Failed to run migrations");
       }
       System.out.println("Successfully connected to db");
-    } catch(Exception e) {
+    } catch (Exception e) {
       System.err.println("Could not connect to db: " + e.toString());
     }
   }
@@ -44,19 +46,17 @@ public class DatabaseConnection {
       Row row = this.row(Migrations.MIGRATION_TABLE, "name", m.name());
       if (row == null) {
         this.query(
-          "INSERT INTO `%s` (name, description, query) VALUES (?, ?, ?)".formatted(Migrations.MIGRATION_TABLE),
-          new Object[]{m.name(), m.description(), m.query()}
-        );
+            "INSERT INTO `%s` (name, description, query) VALUES (?, ?, ?)".formatted(Migrations.MIGRATION_TABLE),
+            new Object[] { m.name(), m.description(), m.query() });
       }
-      if (row == null || !(boolean)row.g("migration_run").getKey()) {
+      if (row == null || !(boolean) row.g("migration_run").getKey()) {
         if (!this.query(m.query()).success()) {
           System.err.println("Error running migration: %s".formatted(m.name()));
           return false;
         }
         QueryResult result = this.query(
-          "UPDATE `%s` m SET `m`.`migration_run` = TRUE WHERE `m`.`name` = ?".formatted(Migrations.MIGRATION_TABLE),
-          new Object[]{m.name()}
-        );
+            "UPDATE `%s` m SET `m`.`migration_run` = TRUE WHERE `m`.`name` = ?".formatted(Migrations.MIGRATION_TABLE),
+            new Object[] { m.name() });
         if (!result.success()) {
           System.err.println("Error updating migration: %s".formatted(m.name()));
           return false;
@@ -70,9 +70,8 @@ public class DatabaseConnection {
 
   boolean tableExists(String tableName) {
     QueryResult result = this.query(
-      "SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_name` = ? LIMIT 1;",
-      new Object[]{Constants.db_name, tableName}
-    );
+        "SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_name` = ? LIMIT 1;",
+        new Object[] { Constants.db_name, tableName });
     if (!result.success()) {
       return false;
     }
@@ -86,9 +85,8 @@ public class DatabaseConnection {
 
   boolean rowExists(String tableName, String columnName, Object param) {
     QueryResult result = this.query(
-      "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
-      new Object[]{param}
-    );
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
+        new Object[] { param });
     if (!result.success()) {
       return false;
     }
@@ -102,9 +100,8 @@ public class DatabaseConnection {
 
   Row row(String tableName, String columnName, Object param) {
     QueryResult result = this.query(
-      "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
-      new Object[]{param}
-    );
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
+        new Object[] { param });
     if (!result.success()) {
       return null;
     }
@@ -118,8 +115,9 @@ public class DatabaseConnection {
   }
 
   QueryResult query(String q) {
-    return this.query(q, new Object[]{});
+    return this.query(q, new Object[] {});
   }
+
   QueryResult query(String q, Object[] params) {
     try {
       this.connection.beginRequest();

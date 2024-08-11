@@ -1,5 +1,5 @@
 
-v0.1.2: Can connect to prod db
+v0.1.3: Prod connects to prod db
 
 
 ### Backend

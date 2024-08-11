@@ -2,9 +2,14 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.updateBuildConfiguration": "automatic",
   "protoc": {
-      "options": [
-          "--proto_path=${workspaceRoot}/model"
-      ]
+    "options": [
+      "--proto_path=${workspaceRoot}/model"
+    ]
   },
-  "editor.rulers": [80,120]
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "redhat.java",
 }
