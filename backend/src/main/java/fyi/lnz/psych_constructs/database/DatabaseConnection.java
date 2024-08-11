@@ -12,21 +12,19 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import fyi.lnz.psych_constructs.database.migrations.*;
+import fyi.lnz.psych_constructs.util.Constants;
 
 record QueryResult(boolean success, ResultSet result, String error) {}
 
 @Service
 public class DatabaseConnection {
-  static private String SCHEMA_NAME = "psych_constructs";
-
   private Connection connection;
 
   DatabaseConnection() {
     try {
-      this.connection = DriverManager.getConnection(
-        "jdbc:mariadb://localhost:3306/" + DatabaseConnection.SCHEMA_NAME,
-        "yodan", "Sjf@85882"
-      );
+      String s = "%s/%s?user=%s&password=%s".formatted();
+      String s = "jdbc:mysql://162.241.24.125:3306/lnzfyi_psych_constructs?user=lnzfyi_yodan&password=Sjf@85882&useSSL=false";
+      this.connection = DriverManager.getConnection(s);
       if (!this.runMigrations()) {
         this.connection = null; // database is in a corrupt state so prevent further damage
         throw new Exception("Failed to run migrations");
@@ -73,7 +71,7 @@ public class DatabaseConnection {
   boolean tableExists(String tableName) {
     QueryResult result = this.query(
       "SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_name` = ? LIMIT 1;",
-      new Object[]{SCHEMA_NAME, tableName}
+      new Object[]{Constants.db_name, tableName}
     );
     if (!result.success()) {
       return false;

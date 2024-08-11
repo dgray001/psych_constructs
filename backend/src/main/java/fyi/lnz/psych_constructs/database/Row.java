@@ -23,6 +23,7 @@ public class Row {
     TYPE.put("INT", Integer.class);
     TYPE.put("INTEGER", Integer.class);
     TYPE.put("TINYINT", Byte.class);
+    TYPE.put("TINYINT UNSIGNED", Boolean.class);
     TYPE.put("SMALLINT", Short.class);
     TYPE.put("BIGINT", Long.class);
     TYPE.put("REAL", Float.class);

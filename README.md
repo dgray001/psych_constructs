@@ -1,11 +1,11 @@
 
-v0.1.1: Can deploy to app engine
+v0.1.2: Can connect to prod db
 
 
 ### Backend
 
 Run dev server:\
-`mvn spring-boot:run`
+`mvn -Dspring-boot.run.arguments="--environment=DEV" spring-boot:ru`
 
 Run packaged:\
 `mvn compile`\

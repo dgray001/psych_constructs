@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "PsychConstructsApplication",
+      "request": "launch",
+      "mainClass": "fyi.lnz.psych_constructs.PsychConstructsApplication",
+      "projectName": "backend",
+      "env": {
+        "ENVIRONMENT": "PROD"
+      },
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+runtime: java21
+
+env: standard
+
+instance_class: F1
+
+handlers:
+  - url: .*
+    script: auto
+
+automatic_scaling:
+  max_instances: 1
+
+service_account: psych-constructs@appspot.gserviceaccount.com
+
+env_variables:
+  ENVIRONMENT: "PROD"

@@ -5,5 +5,6 @@
       "options": [
           "--proto_path=${workspaceRoot}/model"
       ]
-  }
+  },
+  "editor.rulers": [80,120]
 }
