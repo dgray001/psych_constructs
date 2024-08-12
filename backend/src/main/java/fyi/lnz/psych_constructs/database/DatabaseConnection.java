@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.google.protobuf.Message;
+
 import fyi.lnz.psych_constructs.database.migrations.*;
 import fyi.lnz.psych_constructs.util.Constants;
 
@@ -46,7 +48,7 @@ public class DatabaseConnection {
       Row row = this.row(Migrations.MIGRATION_TABLE, "name", m.name());
       if (row == null) {
         this.query(
-            "INSERT INTO `%s` (name, description, query) VALUES (?, ?, ?)".formatted(Migrations.MIGRATION_TABLE),
+            "INSERT INTO `%s` (name, description, query) VALUES (?, ?, ?);".formatted(Migrations.MIGRATION_TABLE),
             new Object[] { m.name(), m.description(), m.query() });
       }
       if (row == null || !(boolean) row.g("migration_run").getKey()) {
@@ -68,7 +70,7 @@ public class DatabaseConnection {
     return true;
   }
 
-  boolean tableExists(String tableName) {
+  public boolean tableExists(String tableName) {
     QueryResult result = this.query(
         "SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_name` = ? LIMIT 1;",
         new Object[] { Constants.db_name, tableName });
@@ -83,9 +85,9 @@ public class DatabaseConnection {
     return false;
   }
 
-  boolean rowExists(String tableName, String columnName, Object param) {
+  public boolean rowExists(String tableName, String columnName, Object param) {
     QueryResult result = this.query(
-        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(tableName, columnName),
         new Object[] { param });
     if (!result.success()) {
       return false;
@@ -98,9 +100,19 @@ public class DatabaseConnection {
     return false;
   }
 
-  Row row(String tableName, String columnName, Object param) {
+  public void insert(String tableName, List<Message> objects) {
+    // construct description of object
+    // then insert in overloaded
+  }
+
+  public boolean ping() {
+    QueryResult result = this.query("SELECT 1;");
+    return result.success();
+  }
+
+  public Row row(String tableName, String columnName, Object param) {
     QueryResult result = this.query(
-        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1".formatted(tableName, columnName),
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(tableName, columnName),
         new Object[] { param });
     if (!result.success()) {
       return null;
@@ -114,11 +126,11 @@ public class DatabaseConnection {
     return rows.get(0);
   }
 
-  QueryResult query(String q) {
+  public QueryResult query(String q) {
     return this.query(q, new Object[] {});
   }
 
-  QueryResult query(String q, Object[] params) {
+  public QueryResult query(String q, Object[] params) {
     try {
       this.connection.beginRequest();
       PreparedStatement ps = this.connection.prepareStatement(q);

@@ -1,28 +1,31 @@
 <script setup lang="ts">
 import { Construct } from '../../proto/construct'
-import { onMounted } from 'vue';
 
-onMounted( async () => {
-const construct: Construct = Construct.create({
-  name: 'tedst',
-  id: BigInt(2)
-})
-const response = await fetch('/api/create', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-protobuf'
-  },
-  body: Construct.toBinary(construct)
-})
-const tt = await response.arrayBuffer()
-const response_construct = Construct.fromBinary(new Uint8Array(tt))
-console.log(response_construct.id, response_construct.name)
-})
+const name = defineModel<string>('name', {default: "default name"})
+const description = defineModel<string>('description', {default: "default description"})
+const create = async () => {
+  const construct: Construct = Construct.create({
+    name: name.value,
+    description: description.value,
+  })
+  const response = await fetch('/api/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-protobuf'
+    },
+    body: Construct.toBinary(construct)
+  })
+  const tt = await response.arrayBuffer()
+  const response_construct = Construct.fromBinary(new Uint8Array(tt))
+  console.log(response_construct.id, response_construct.name)
+}
 </script>
 
 <template>
   <div class="form">
-    <h1>This is an form page</h1>
+    <input v-model="name">
+    <textarea v-model="description"></textarea>
+    <button @click="create">Submit</button>
   </div>
 </template>
 

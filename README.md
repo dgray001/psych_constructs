@@ -1,11 +1,11 @@
 
-v0.1.3: Prod connects to prod db
+v0.1.4: Frontend test form
 
 
 ### Backend
 
 Run dev server:\
-`mvn -Dspring-boot.run.arguments="--environment=DEV" spring-boot:ru`
+`mvn -Dspring-boot.run.arguments="--environment=DEV" spring-boot:run`
 
 Run packaged:\
 `mvn compile`\
