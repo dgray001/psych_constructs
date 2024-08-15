@@ -1,5 +1,5 @@
 
-v0.1.17 Basic list api
+v0.1.18 Begin css framework
 
 
 ### Backend
@@ -10,8 +10,6 @@ Run dev server:\
 Run packaged:\
 `mvn compile`\
 `java -jar target/backend-0.0.1-SNAPSHOT.jar`
-
-The database connection for dev is hardcoded for now until the prod infrastructure is set up
 
 
 ### Frontend

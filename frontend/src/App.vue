@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import AppHeader from './components/AppHeader.vue'
+import AppFooter from './components/AppFooter.vue'
 </script>
 
 <template>
   <header>
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
+      <AppHeader msg = "this is a header" />
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/construct/form">Construct</RouterLink>
@@ -16,6 +16,8 @@ import HelloWorld from './components/HelloWorld.vue'
   </header>
 
   <RouterView />
+
+  <AppFooter />
 </template>
 
 <style scoped>

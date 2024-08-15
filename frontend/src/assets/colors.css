@@ -1,0 +1,67 @@
+:root {
+  --bg-1-light: rgb(255, 245, 255);
+  --bg-2-light: rgb(235, 235, 235);
+  --bg-3-light: rgb(220, 220, 220);
+  --bg-hover-light: rgb(235, 235, 235);
+  --bg-click-light: rgb(220, 220, 220);
+  --bg-disabled-light: rgb(200, 200, 200);
+  --txt-primary-light: rgb(10, 10, 10);
+  --txt-header-light: rgb(50, 10, 10);
+  --txt-warning-light: rgb(80, 80, 0);
+  --txt-error-light: rgb(120, 0, 0);
+  --txt-link-light: rgb(20, 20, 110);
+  --txt-link-hover-light: rgb(10, 10, 70);
+  --txt-link-click-light: rgb(10, 10, 10);
+  --txt-link-visited-light: rgb(60, 20, 90);
+
+  --bg-1-dark: rgb(255, 245, 255);
+  --bg-2-dark: rgb(235, 235, 235);
+  --bg-3-dark: rgb(220, 220, 220);
+  --bg-hover-dark: rgb(235, 235, 235);
+  --bg-click-dark: rgb(220, 220, 220);
+  --bg-disabled-dark: rgb(200, 200, 200);
+  --txt-primary-dark: rgb(10, 10, 10);
+  --txt-header-dark: rgb(50, 10, 10);
+  --txt-warning-dark: rgb(80, 80, 0);
+  --txt-error-dark: rgb(120, 0, 0);
+  --txt-link-dark: rgb(20, 20, 110);
+  --txt-link-hover-dark: rgb(10, 10, 70);
+  --txt-link-click-dark: rgb(10, 10, 10);
+  --txt-link-visited-dark: rgb(60, 20, 90);
+}
+
+body {
+  --bg-1: var(--bg-1-light);
+  --bg-2: var(--bg-2-light);
+  --bg-3: var(--bg-3-light);
+  --bg-hover: var(--bg-hover-light);
+  --bg-click: var(--bg-click-light);
+  --bg-disabled: var(--bg-disabled-light);
+  --txt-primary: var(--txt-primary-light);
+  --txt-header: var(--txt-header-light);
+  --txt-warning: var(--txt-warning-light);
+  --txt-error: var(--txt-error-light);
+  --txt-link: var(--txt-link-light);
+  --txt-link-hover: var(--txt-link-hover-light);
+  --txt-link-click: var(--txt-link-clicked-light);
+  --txt-link-visited: var(--txt-link-visited-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --bg-1: var(--bg-1-dark);
+    --bg-2: var(--bg-2-dark);
+    --bg-3: var(--bg-3-dark);
+    --bg-hover: var(--bg-hover-dark);
+    --bg-click: var(--bg-click-dark);
+    --bg-disabled: var(--bg-disabled-dark);
+    --txt-primary: var(--txt-primary-dark);
+    --txt-header: var(--txt-header-dark);
+    --txt-warning: var(--txt-warning-dark);
+    --txt-error: var(--txt-error-dark);
+    --txt-link: var(--txt-link-dark);
+    --txt-link-hover: var(--txt-link-hover-dark);
+    --txt-link-click: var(--txt-link-clicked-dark);
+    --txt-link-visited: var(--txt-link-visited-dark);
+  }
+}

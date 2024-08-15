@@ -2,6 +2,10 @@
 </script>
 
 <template>
-  <main>
-  </main>
+  <div>
+    footer
+  </div>
 </template>
+
+<style scoped>
+</style>
