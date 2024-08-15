@@ -1,5 +1,8 @@
 package fyi.lnz.psych_constructs.operations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
@@ -77,7 +80,16 @@ public class Constructs implements Crud<Construct> {
     return this.read(c.getId());
   }
 
-  public Construct[] list(Query q) {
-    return new Construct[] {};
+  public Crud.ListResult<Construct> list(Query q) {
+    List<Object> params = new ArrayList<Object>();
+    fyi.lnz.psych_constructs.database.ListResult result = this.db().list(this.tableName(), "", params.toArray());
+    if (result.error() != null) {
+      return new ListResult<Construct>(false, null, result.error());
+    }
+    Construct[] rows = new Construct[result.rows().size()];
+    for (int i = 0; i < rows.length; i++) {
+      rows[i] = this.convertRow(result.rows().get(i));
+    }
+    return new ListResult<Construct>(true, rows, null);
   }
 }

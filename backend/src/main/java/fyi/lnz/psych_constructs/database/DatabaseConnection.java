@@ -276,6 +276,25 @@ public class DatabaseConnection {
     return rows.get(0);
   }
 
+  public ListResult list(String table_name, String where_clause, Object[] params) {
+    return this.list(table_name, where_clause, params, Constants.default_query_limit, 0);
+  }
+
+  public ListResult list(String table_name, String where_clause, Object[] params, Integer limit, Integer offset) {
+    if (!DatabaseConnection.isDataTable(table_name)) {
+      return new ListResult("Invalid table", true);
+    }
+    if (where_clause != null && !where_clause.isBlank()) {
+      where_clause = "WHERE %s".formatted(where_clause);
+    }
+    String q = "SELECT * FROM `%s` %s LIMIT %s OFFSET %s;".formatted(table_name, where_clause, limit, offset);
+    QueryResult result = this.query(q, params);
+    if (!result.success()) {
+      return new ListResult(result.error());
+    }
+    return new ListResult(Row.formRows(result.result()));
+  }
+
   public QueryResult query(String q) {
     return this.query(q, new Object[] {});
   }

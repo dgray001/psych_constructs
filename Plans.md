@@ -1,7 +1,7 @@
 
 v0.2: Backend CRUD abstraction
-17-19: Construct list api
-20: Add any cleanup or additional abstractions
+18: Construct list api
+19: Add any cleanup or additional abstractions
 
 v0.3: Frontend CRUD abstraction
 frontend api abstraction

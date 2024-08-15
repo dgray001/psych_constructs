@@ -37,4 +37,6 @@ public class Constants {
   public final static String db_ssl = isDev() ? "false" : "false";
 
   public final static String api_prefix = "api";
+
+  public final static Integer default_query_limit = 50;
 }

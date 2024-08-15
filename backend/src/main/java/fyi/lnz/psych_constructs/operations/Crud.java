@@ -8,6 +8,7 @@ import fyi.lnz.psych_constructs.database.Row;
 import proto.Query;
 
 public interface Crud<T extends Message> {
+
   public DatabaseConnection db();
 
   public String tableName();
@@ -91,5 +92,8 @@ public interface Crud<T extends Message> {
 
   // TODO: Add bulk delete
 
-  public T[] list(Query q);
+  public record ListResult<T>(boolean success, T[] rows, String error) {
+  }
+
+  public ListResult<T> list(Query q);
 }

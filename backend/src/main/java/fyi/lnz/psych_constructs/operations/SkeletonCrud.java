@@ -56,7 +56,7 @@ public class SkeletonCrud implements Crud<Message> {
     return null;
   }
 
-  public Message[] list(Query q) {
-    return new Message[] {};
+  public ListResult<Message> list(Query q) {
+    return null;
   }
 }
