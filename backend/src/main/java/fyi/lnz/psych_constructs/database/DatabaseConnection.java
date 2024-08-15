@@ -97,12 +97,32 @@ public class DatabaseConnection {
   }
 
   public boolean rowExists(String table_name, String column_name, Object param) {
-    if (!DatabaseConnection.isDataTable(table_name)) {
+    return rowExists(table_name, column_name, param, null, null);
+  }
+
+  public boolean rowExists(String table_name, String column_name, Object param, String exclude_column,
+      Object exclude_param) {
+    Table t = Tables.get(table_name);
+    if (!DatabaseConnection.isDataTable(table_name) || t == null) {
+      System.err.println("Invalid table");
       return false;
     }
+    if (!t.hasColumn(column_name)) {
+      System.err.println("Invalid column %s".formatted(column_name));
+      return false;
+    }
+    Object[] params = exclude_param == null ? new Object[] { param } : new Object[] { param, exclude_param };
+    String exclude_clause = "";
+    if (exclude_column != null && exclude_param != null) {
+      if (!t.hasColumn(exclude_column)) {
+        System.err.println("Invalid exclude column %s".formatted(exclude_column));
+        return false;
+      }
+      exclude_clause = "AND `t`.`%s` != ?".formatted(exclude_column);
+    }
     QueryResult result = this.query(
-        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(table_name, column_name),
-        new Object[] { param });
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? %s LIMIT 1;".formatted(table_name, column_name, exclude_clause),
+        params);
     if (!result.success()) {
       return false;
     }
@@ -150,7 +170,7 @@ public class DatabaseConnection {
     String values_string = Str.repeat(columns.length, "?", ", ");
     String values_clause = Str.repeat(objects.size(), "(%s)".formatted(values_string), ", ");
     String insert_clause = "(%s)".formatted(String.join(", ", columns));
-    String query = "INSERT INTO `%s` %s VALUES %s".formatted(table_name, insert_clause, values_clause);
+    String query = "INSERT INTO `%s` %s VALUES %s;".formatted(table_name, insert_clause, values_clause);
     QueryResult result = this.query(query, params);
     if (!result.success()) {
       return null;
@@ -172,6 +192,63 @@ public class DatabaseConnection {
     return new InsertResult(result.rows(), generated_keys);
   }
 
+  public UpdateResult update(String table_name, String id_column, Object id, String[] columns, Message object) {
+    Table t = Tables.get(table_name);
+    if (!DatabaseConnection.isDataTable(table_name) || t == null) {
+      System.err.println("Invalid update table");
+      return null;
+    }
+    if (!t.hasColumn(id_column)) {
+      System.err.println("Invalid update id column %s".formatted(id_column));
+      return null;
+    }
+    for (String c : columns) {
+      if (!t.hasColumn(c)) {
+        System.err.println("Invalid update column %s".formatted(c));
+        return null;
+      }
+    }
+    List<Object> params = new ArrayList<>();
+    for (String c : columns) {
+      FieldDescriptor descriptor = object.getDescriptorForType().findFieldByName(c);
+      if (descriptor == null) {
+        params.add(null);
+      } else {
+        params.add(object.getField(descriptor));
+      }
+    }
+    List<String> set_clause_strings = new ArrayList<>();
+    for (String c : columns) {
+      set_clause_strings.add("%s = ?".formatted(c));
+    }
+    String set_clause = String.join(", ", set_clause_strings);
+    params.add(id);
+    String query = "UPDATE `%s` SET %s WHERE %s = ? LIMIT 1;".formatted(table_name, set_clause, id_column);
+    QueryResult result = this.query(query, params);
+    if (!result.success()) {
+      return null;
+    }
+    return new UpdateResult(result.rows());
+  }
+
+  public boolean delete(String table_name, String id_column, Object id) {
+    Table t = Tables.get(table_name);
+    if (!DatabaseConnection.isDataTable(table_name) || t == null) {
+      System.err.println("Invalid delete table");
+      return false;
+    }
+    if (!t.hasColumn(id_column)) {
+      System.err.println("Invalid delete id column %s".formatted(id_column));
+      return false;
+    }
+    String query = "DELETE FROM `%s` WHERE %s = ? LIMIT 1;".formatted(table_name, id_column);
+    QueryResult result = this.query(query, new Object[] { id });
+    if (!result.success()) {
+      return false;
+    }
+    return result.rows() > 0;
+  }
+
   public boolean ping() {
     QueryResult result = this.query("SELECT 1;");
     return result.success();
@@ -181,7 +258,7 @@ public class DatabaseConnection {
     return this.row(table_name, column_name, param, true);
   }
 
-  public Row row(String table_name, String column_name, Object param, boolean check_table_name) {
+  private Row row(String table_name, String column_name, Object param, boolean check_table_name) {
     // TODO: support sort clause
     if (check_table_name && !DatabaseConnection.isDataTable(table_name)) {
       return null;

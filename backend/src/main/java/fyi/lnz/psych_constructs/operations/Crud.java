@@ -12,7 +12,13 @@ public interface Crud<T extends Message> {
 
   public String tableName();
 
+  public default String idColumn() {
+    return "id";
+  }
+
   public boolean malformed(T t);
+
+  public boolean exists(T t);
 
   public boolean duplicate(T t);
 
@@ -30,11 +36,15 @@ public interface Crud<T extends Message> {
       this.error("Cannot create because object is malformed");
       return null;
     }
+    if (this.exists(t)) {
+      this.error("Cannot create because object already exists");
+      return null;
+    }
     if (this.duplicate(t)) {
       this.error("Cannot create because object is duplicate");
       return null;
     }
-    InsertResult result = this.insert(t);
+    InsertResult result = this.db().insert(this.tableName(), this.insertColumns(false), t);
     try {
       return this.read(result.generated_keys().get(0));
     } catch (Exception e) {
@@ -43,10 +53,10 @@ public interface Crud<T extends Message> {
     }
   }
 
-  public InsertResult insert(T t);
+  public String[] insertColumns(boolean updateQuery);
 
   public default T read(Integer id) {
-    Row r = this.db().row(this.tableName(), "id", id);
+    Row r = this.db().row(this.tableName(), this.idColumn(), id);
     if (r == null) {
       this.error("Error reading construct");
       return null;
@@ -54,9 +64,27 @@ public interface Crud<T extends Message> {
     return this.convertRow(r);
   }
 
+  public default T update(T t) {
+    if (this.malformed(t)) {
+      this.error("Cannot update because object is malformed");
+      return null;
+    }
+    if (!this.exists(t)) {
+      this.error("Cannot update because object doesn't exists");
+      return null;
+    }
+    if (this.duplicate(t)) {
+      this.error("Cannot update because object is duplicate");
+      return null;
+    }
+    return this._update(t);
+  }
+
+  public T _update(T t);
+
+  public default boolean delete(Integer id) {
+    return this.db().delete(this.tableName(), this.idColumn(), id);
+  }
+
   public T[] list(Query q);
-
-  // public T update(T t);
-
-  // public T delete(Integer id);
 }

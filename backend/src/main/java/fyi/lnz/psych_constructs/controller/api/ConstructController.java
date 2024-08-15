@@ -10,8 +10,12 @@ import fyi.lnz.psych_constructs.util.Constants;
 import proto.Construct;
 import proto.CreateConstructRequest;
 import proto.CreateConstructResponse;
+import proto.DeleteConstructRequest;
+import proto.DeleteConstructResponse;
 import proto.ReadConstructRequest;
 import proto.ReadConstructResponse;
+import proto.UpdateConstructRequest;
+import proto.UpdateConstructResponse;
 
 @RestController
 @RequestMapping(Constants.api_prefix + "/construct")
@@ -39,10 +43,34 @@ public class ConstructController {
   public byte[] read(@RequestBody() byte[] protobuf) {
     try {
       ReadConstructRequest request = ReadConstructRequest.parseFrom(protobuf);
-      Construct created = this.constructs.read(request.getId());
-      return ReadConstructResponse.newBuilder().setConstruct(created).build().toByteArray();
+      Construct read = this.constructs.read(request.getId());
+      return ReadConstructResponse.newBuilder().setConstruct(read).build().toByteArray();
     } catch (Exception e) {
       System.err.println("Error in read construct api: " + e.toString());
+      return null;
+    }
+  }
+
+  @PostMapping(value = "/update", consumes = "application/x-protobuf", produces = "application/x-protobuf")
+  public byte[] update(@RequestBody() byte[] protobuf) {
+    try {
+      UpdateConstructRequest request = UpdateConstructRequest.parseFrom(protobuf);
+      Construct updated = this.constructs.update(request.getConstruct());
+      return UpdateConstructResponse.newBuilder().setConstruct(updated).build().toByteArray();
+    } catch (Exception e) {
+      System.err.println("Error in update construct api: " + e.toString());
+      return null;
+    }
+  }
+
+  @PostMapping(value = "/delete", consumes = "application/x-protobuf", produces = "application/x-protobuf")
+  public byte[] delete(@RequestBody() byte[] protobuf) {
+    try {
+      DeleteConstructRequest request = DeleteConstructRequest.parseFrom(protobuf);
+      this.constructs.delete(request.getId());
+      return DeleteConstructResponse.newBuilder().build().toByteArray();
+    } catch (Exception e) {
+      System.err.println("Error in update construct api: " + e.toString());
       return null;
     }
   }

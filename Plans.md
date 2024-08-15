@@ -1,7 +1,5 @@
 
 v0.2: Backend CRUD abstraction
-14: Construct update api
-15: Construct delete api
 16: Construct list api
 17: All construct apis return error messages in response objects
 18: Measure boilerplate CRUD

@@ -3,6 +3,7 @@ syntax = "proto2";
 package proto;
 
 import "construct.proto";
+import "query.proto";
 
 option java_multiple_files = true;
 
@@ -20,4 +21,27 @@ message ReadConstructRequest {
 
 message ReadConstructResponse {
   optional Construct construct = 1;
+}
+
+message UpdateConstructRequest {
+  optional Construct construct = 1;
+}
+
+message UpdateConstructResponse {
+  optional Construct construct = 1;
+}
+
+message DeleteConstructRequest {
+  optional int32 id = 1;
+}
+
+message DeleteConstructResponse {
+}
+
+message ListConstructRequest {
+  optional Query query = 1;
+}
+
+message ListConstructResponse {
+  repeated Construct constructs = 1;
 }

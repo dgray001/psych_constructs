@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
 import fyi.lnz.psych_constructs.database.InsertResult;
 import fyi.lnz.psych_constructs.database.Row;
+import fyi.lnz.psych_constructs.database.UpdateResult;
 import proto.Construct;
 import proto.Query;
 
@@ -33,11 +34,15 @@ public class Constructs implements Crud<Construct> {
     return false;
   }
 
-  public boolean duplicate(Construct c) {
-    if (c.getId() > 0 && this.db.row(this.tableName(), "id", c.getId()) != null) {
+  public boolean exists(Construct c) {
+    if (c.getId() > 0 && this.db.rowExists(this.tableName(), this.idColumn(), c.getId())) {
       return true;
     }
-    if (this.db.row(this.tableName(), "name", c.getName()) != null) {
+    return false;
+  }
+
+  public boolean duplicate(Construct c) {
+    if (this.db.rowExists(this.tableName(), "name", c.getName(), this.idColumn(), c.getId())) {
       return true;
     }
     return false;
@@ -54,12 +59,23 @@ public class Constructs implements Crud<Construct> {
   public void _error(String e) {
   }
 
-  public InsertResult insert(Construct c) {
-    return this.db.insert(this.tableName(), new String[] { "name", "description" }, c);
+  public String[] insertColumns(boolean updateQuery) {
+    if (updateQuery) {
+      return new String[] { this.idColumn(), "name", "description" };
+    }
+    return new String[] { "name", "description" };
   }
 
   public Row row(Integer id) {
-    return this.db.row(this.tableName(), "id", id);
+    return this.db().row(this.tableName(), this.idColumn(), id);
+  }
+
+  public Construct _update(Construct c) {
+    UpdateResult result = this.db().update(this.tableName(), this.idColumn(), c.getId(), this.insertColumns(true), c);
+    if (result == null || result.rows() < 1) {
+      return null;
+    }
+    return this.read(c.getId());
   }
 
   public Construct[] list(Query q) {

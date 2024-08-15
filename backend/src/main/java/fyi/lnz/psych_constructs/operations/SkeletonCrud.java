@@ -5,11 +5,10 @@ import org.springframework.stereotype.Component;
 import com.google.protobuf.Message;
 
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
-import fyi.lnz.psych_constructs.database.InsertResult;
 import fyi.lnz.psych_constructs.database.Row;
 import proto.Query;
 
-/** Database operations for constructs */
+/** Use to quickly generate boilerplate for new objects */
 @Component
 public class SkeletonCrud implements Crud<Message> {
 
@@ -31,6 +30,10 @@ public class SkeletonCrud implements Crud<Message> {
     return false;
   }
 
+  public boolean exists(Message c) {
+    return false;
+  }
+
   public boolean duplicate(Message c) {
     return false;
   }
@@ -42,7 +45,14 @@ public class SkeletonCrud implements Crud<Message> {
   public void _error(String e) {
   }
 
-  public InsertResult insert(Message c) {
+  public String[] insertColumns(boolean updateQuery) {
+    if (updateQuery) {
+      return new String[] {};
+    }
+    return new String[] {};
+  }
+
+  public Message _update(Message c) {
     return null;
   }
 
