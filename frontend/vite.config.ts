@@ -19,8 +19,13 @@ export default defineConfig({
     outDir: '../backend/src/main/resources/static'
   },
   server: {
+    port: 5175,
     proxy: {
-      '/api': 'http://localhost:8080',
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+      '/testy': 'http://google.com'
     },
   },
 })

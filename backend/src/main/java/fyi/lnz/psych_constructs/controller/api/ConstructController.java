@@ -2,14 +2,17 @@ package fyi.lnz.psych_constructs.controller.api;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import fyi.lnz.psych_constructs.controller.ApiController;
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
+import fyi.lnz.psych_constructs.util.Constants;
 import proto.Construct;
 
-@ApiController
+@RestController
+@RequestMapping(Constants.api_prefix + "/construct")
 public class ConstructController {
 
   private final DatabaseConnection db;

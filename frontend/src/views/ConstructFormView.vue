@@ -8,7 +8,7 @@ const create = async () => {
     name: name.value,
     description: description.value,
   })
-  const response = await fetch('/api/create', {
+  const response = await fetch('/api/construct/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-protobuf'
