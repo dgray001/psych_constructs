@@ -9,6 +9,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
 import fyi.lnz.psych_constructs.database.InsertResult;
+import fyi.lnz.psych_constructs.operations.Constructs;
 import fyi.lnz.psych_constructs.util.Constants;
 import proto.Construct;
 
@@ -17,9 +18,11 @@ import proto.Construct;
 public class ConstructController {
 
   private final DatabaseConnection db;
+  private final Constructs constructs;
 
-  public ConstructController(DatabaseConnection db) {
+  public ConstructController(DatabaseConnection db, Constructs constructs) {
     this.db = db;
+    this.constructs = constructs;
   }
 
   @PostMapping(value = "/create", consumes = "application/x-protobuf", produces = "application/x-protobuf")
@@ -28,6 +31,7 @@ public class ConstructController {
     InsertResult result = db.insert("construct", new String[] { "name" }, request);
     if (result != null) {
       System.out.println(result.rows() + " " + result.generated_keys());
+      System.out.println(this.constructs.read(result.generated_keys().get(0)));
     }
     return Construct.newBuilder().setName(request.getName() + "!!!").setId(request.getId() + 1).build().toByteArray();
   }

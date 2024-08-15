@@ -1,5 +1,5 @@
 
-v0.1.8 Insert returns generated keys and num rows affected
+v0.1.9 Initial CRUD interface
 
 
 ### Backend

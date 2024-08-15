@@ -13,26 +13,27 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/** Allows protobuf messages to be passed to and from the rest controllers */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	@Autowired
+  @Autowired
   @Lazy
-	ProtobufHttpMessageConverter protobufHttpMessageConverter;
+  ProtobufHttpMessageConverter protobufHttpMessageConverter;
 
-	@Bean
-	ProtobufHttpMessageConverter protobufHttpMessageConverter() {
-		return new ProtobufHttpMessageConverter();
-	}
+  @Bean
+  ProtobufHttpMessageConverter protobufHttpMessageConverter() {
+    return new ProtobufHttpMessageConverter();
+  }
 
-	@Bean
-	RestTemplate restTemplate(ProtobufHttpMessageConverter hmc) {
-		return new RestTemplate(Arrays.asList(hmc));
-	}
+  @Bean
+  RestTemplate restTemplate(ProtobufHttpMessageConverter hmc) {
+    return new RestTemplate(Arrays.asList(hmc));
+  }
 
-	@Override
-	public void extendMessageConverters(@NonNull List<HttpMessageConverter<?>> converters) {
-		converters.add(protobufHttpMessageConverter);
-	}
+  @Override
+  public void extendMessageConverters(@NonNull List<HttpMessageConverter<?>> converters) {
+    converters.add(protobufHttpMessageConverter);
+  }
 
 }

@@ -5,7 +5,7 @@ package proto;
 option java_multiple_files = true;
 
 message OrdinalQuestion {
-  optional int64 id = 1;
-  optional int64 scale_id = 2;
+  optional int32 id = 1;
+  optional int32 scale_id = 2;
   optional string text = 3;
 }

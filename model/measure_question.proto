@@ -5,7 +5,7 @@ package proto;
 option java_multiple_files = true;
 
 message MeasureQuestion {
-  optional int64 id = 1;
+  optional int32 id = 1;
   optional int32 measure_id = 2;
   optional int32 question_id = 3;
 }

@@ -11,28 +11,28 @@ public class Tables {
             "table describing constructs which are labels for some domain of human behavior",
             1,
             new Column[] {
-                new Column("id", "INT", "NOT NULL AUTO_INCREMENT", true, true),
-                new Column("name", "VARCHAR(128)", "NOT NULL", true),
-                new Column("description", "VARCHAR(1024)", "NOT NULL DEFAULT ''")
+                new Column("id", "INT", "AUTO_INCREMENT", true, true),
+                new Column("name", "VARCHAR(128)", "", true),
+                new Column("description", "VARCHAR(1024)", "DEFAULT ''")
             }),
         new Table(
             "measure",
             "table describing measures which are models for measuring a particular construct",
             1,
             new Column[] {
-                new Column("id", "INT", "NOT NULL AUTO_INCREMENT", true, true),
-                new Column("name", "VARCHAR(128)", "NOT NULL", true),
-                new Column("description", "VARCHAR(1024)", "NOT NULL DEFAULT ''"),
-                new Column("questions_sorted", "TINYINT(1)", "UNSIGNED ZEROFILL NOT NULL DEFAULT FALSE")
+                new Column("id", "INT", " AUTO_INCREMENT", true, true),
+                new Column("name", "VARCHAR(128)", "", true),
+                new Column("description", "VARCHAR(1024)", "DEFAULT ''"),
+                new Column("questions_sorted", "TINYINT(1) UNSIGNED ZEROFILL", "DEFAULT FALSE")
             }),
         new Table(
             "construct_measure",
             "table to join constructs and measures together",
             1,
             new Column[] {
-                new Column("id", "INT", "NOT NULL AUTO_INCREMENT", true, true),
-                new Column("construct_id", "INT", "NOT NULL"),
-                new Column("measure_id", "INT", "NOT NULL")
+                new Column("id", "INT", "AUTO_INCREMENT", true, true),
+                new Column("construct_id", "INT", ""),
+                new Column("measure_id", "INT", "")
             }),
     };
   }
@@ -61,7 +61,7 @@ record Column(String name, String type, String options, boolean unique, boolean 
   }
 
   public String createStatement() {
-    return "`%s` %s %s".formatted(this.name, this.type, this.options);
+    return "`%s` %s %s".formatted(this.name, this.type, "NOT NULL %s".formatted(this.options));
   }
 
   public List<String> keyStatements() {
