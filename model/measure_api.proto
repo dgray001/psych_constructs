@@ -1,0 +1,52 @@
+syntax = "proto2";
+
+package proto;
+
+import "measure.proto";
+import "query.proto";
+
+option java_multiple_files = true;
+
+message CreateMeasureRequest {
+  optional Measure measure = 1;
+}
+
+message CreateMeasureResponse {
+  optional Measure measure = 1;
+  optional string error_message = 2;
+}
+
+message ReadMeasureRequest {
+  optional int32 id = 1;
+}
+
+message ReadMeasureResponse {
+  optional Measure measure = 1;
+  optional string error_message = 2;
+}
+
+message UpdateMeasureRequest {
+  optional Measure measure = 1;
+}
+
+message UpdateMeasureResponse {
+  optional Measure measure = 1;
+  optional string error_message = 2;
+}
+
+message DeleteMeasureRequest {
+  optional int32 id = 1;
+}
+
+message DeleteMeasureResponse {
+  optional string error_message = 1;
+}
+
+message ListMeasureRequest {
+  optional Query query = 1;
+}
+
+message ListMeasureResponse {
+  repeated Measure measures = 1;
+  optional string error_message = 2;
+}
