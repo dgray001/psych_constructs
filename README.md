@@ -1,5 +1,5 @@
 
-v0.1.18 Begin css framework
+v0.2: Backend CRUD abstraction
 
 
 ### Backend
