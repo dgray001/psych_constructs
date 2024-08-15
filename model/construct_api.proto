@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package proto;
+
+import "construct.proto";
+
+option java_multiple_files = true;
+
+message CreateConstructRequest {
+  optional Construct construct = 1;
+}
+
+message CreateConstructResponse {
+  optional Construct construct = 1;
+}

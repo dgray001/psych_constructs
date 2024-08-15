@@ -1,24 +1,27 @@
 <script setup lang="ts">
+import { CreateConstructRequest, CreateConstructResponse } from '../../proto/construct_api';
 import { Construct } from '../../proto/construct'
 
 const name = defineModel<string>('name', {default: "default name"})
 const description = defineModel<string>('description', {default: "default description"})
 const create = async () => {
-  const construct: Construct = Construct.create({
-    name: name.value,
-    description: description.value,
+  const request: CreateConstructRequest = CreateConstructRequest.create({
+    construct: Construct.create({
+      name: name.value,
+      description: description.value,
+    })
   })
   const response = await fetch('/api/construct/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-protobuf'
     },
-    body: Construct.toBinary(construct)
+    body: CreateConstructRequest.toBinary(request)
   })
   const tt = await response.arrayBuffer()
-  const response_construct = Construct.fromBinary(new Uint8Array(tt))
-  console.log(response_construct.id?.toString(), response_construct.name)
-}
+  const response_construct = CreateConstructResponse.fromBinary(new Uint8Array(tt))
+  console.log(response_construct.construct?.id?.toString(), response_construct.construct?.name)
+} 
 </script>
 
 <template>

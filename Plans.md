@@ -1,7 +1,6 @@
 
 v0.2: Construct / Measure CRUD
 
-backend create for construct
 backend retrieve for construct
 backend update for construct
 backend delete for construct

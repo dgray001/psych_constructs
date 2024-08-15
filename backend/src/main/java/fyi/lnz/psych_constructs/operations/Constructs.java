@@ -6,16 +6,41 @@ import fyi.lnz.psych_constructs.database.DatabaseConnection;
 import fyi.lnz.psych_constructs.database.InsertResult;
 import fyi.lnz.psych_constructs.database.Row;
 import proto.Construct;
+import proto.Query;
 
 /** Database operations for constructs */
 @Component
 public class Constructs implements Crud<Construct> {
 
   private final DatabaseConnection db;
-  private final String table_name = "construct";
 
   public Constructs(DatabaseConnection db) {
     this.db = db;
+  }
+
+  public DatabaseConnection db() {
+    return this.db;
+  }
+
+  public String tableName() {
+    return "construct";
+  }
+
+  public boolean malformed(Construct c) {
+    if (c.getName() == null || c.getName().length() < 3) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean duplicate(Construct c) {
+    if (c.getId() > 0 && this.db.row(this.tableName(), "id", c.getId()) != null) {
+      return true;
+    }
+    if (this.db.row(this.tableName(), "name", c.getName()) != null) {
+      return true;
+    }
+    return false;
   }
 
   public Construct convertRow(Row r) {
@@ -26,24 +51,18 @@ public class Constructs implements Crud<Construct> {
         .build();
   }
 
-  public Construct create(Construct c) {
-    // TODO: add check for malformed construct
-    // TODO: add check for duplicate construct
-    InsertResult result = db.insert("construct", new String[] { "name", "description" }, c);
-    try {
-      return this.read(result.generated_keys().get(0));
-    } catch (Exception e) {
-      System.err.println("Error creating construct: " + e.toString());
-      return null;
-    }
+  public void _error(String e) {
   }
 
-  public Construct read(Integer i) {
-    Row r = this.db.row(this.table_name, "id", i);
-    if (r == null) {
-      System.err.println("Error reading construct");
-      return null;
-    }
-    return this.convertRow(r);
+  public InsertResult insert(Construct c) {
+    return this.db.insert(this.tableName(), new String[] { "name", "description" }, c);
+  }
+
+  public Row row(Integer id) {
+    return this.db.row(this.tableName(), "id", id);
+  }
+
+  public Construct[] list(Query q) {
+    return new Construct[] {};
   }
 }
