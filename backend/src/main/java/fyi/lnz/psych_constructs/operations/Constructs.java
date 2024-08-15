@@ -29,7 +29,7 @@ public class Constructs implements Crud<Construct> {
     return null;
   }
 
-  public Construct read(Long i) {
+  public Construct read(Integer i) {
     Row r = this.db.row(this.table_name, "id", i);
     return this.convertRow(r);
   }

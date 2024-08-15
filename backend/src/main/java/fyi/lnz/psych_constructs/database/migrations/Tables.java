@@ -1,9 +1,13 @@
 package fyi.lnz.psych_constructs.database.migrations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Tables {
+  private static Map<String, Table> table_hash = Tables.getHash();
+
   public static Table[] all() {
     return new Table[] {
         new Table(
@@ -35,6 +39,18 @@ public class Tables {
                 new Column("measure_id", "INT", "")
             }),
     };
+  }
+
+  private static Map<String, Table> getHash() {
+    Map<String, Table> hash = new HashMap<>();
+    for (Table t : Tables.all()) {
+      hash.put(t.name(), t);
+    }
+    return hash;
+  };
+
+  public static Table get(String name) {
+    return Tables.table_hash.get(name);
   }
 
   static Migration[] allMigrations() {

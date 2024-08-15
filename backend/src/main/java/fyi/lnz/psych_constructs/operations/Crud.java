@@ -7,9 +7,9 @@ public interface Crud<T> {
 
   public T create(T t);
 
-  public T read(Long id);
+  public T read(Integer id);
 
   // public T update(T t);
 
-  // public T delete(Long id);
+  // public T delete(Integer id);
 }

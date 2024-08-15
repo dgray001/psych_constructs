@@ -22,4 +22,13 @@ public record Table(String name, String description, int version, Column[] colum
     }
     return new Migration(this.name, this.description, this.createStatement());
   }
+
+  public boolean hasColumn(String column) {
+    for (Column c : this.columns) {
+      if (c.name() == column) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

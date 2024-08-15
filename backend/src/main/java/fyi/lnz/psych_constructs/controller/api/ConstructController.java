@@ -28,7 +28,9 @@ public class ConstructController {
   @PostMapping(value = "/create", consumes = "application/x-protobuf", produces = "application/x-protobuf")
   public byte[] create(@RequestBody() byte[] protobuf) throws InvalidProtocolBufferException {
     Construct request = Construct.parseFrom(protobuf);
-    InsertResult result = db.insert("construct", new String[] { "name" }, request);
+    InsertResult result = db.insert("construct", new String[] { "name", "description" },
+        new Construct[] { request,
+            Construct.newBuilder(request).setName("%s 2".formatted(request.getName())).build() });
     if (result != null) {
       System.out.println(result.rows() + " " + result.generated_keys());
       System.out.println(this.constructs.read(result.generated_keys().get(0)));

@@ -18,6 +18,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import fyi.lnz.psych_constructs.database.migrations.*;
 import fyi.lnz.psych_constructs.util.ArrU;
 import fyi.lnz.psych_constructs.util.Constants;
+import fyi.lnz.psych_constructs.util.Str;
 
 record QueryResult(boolean success, ResultSet result, Integer rows, String error) {
 }
@@ -124,50 +125,51 @@ public class DatabaseConnection {
   }
 
   public InsertResult insert(String table_name, String[] columns, List<Message> objects) {
-    if (!DatabaseConnection.isDataTable(table_name) || columns.length < 1 || objects.size() < 1) {
+    Table t = Tables.get(table_name);
+    if (!DatabaseConnection.isDataTable(table_name) || t == null || columns.length < 1 || objects.size() < 1) {
+      System.err.println("Invalid insert parameters");
       return null;
     }
-    List<String> object_strings = new ArrayList<>();
-    for (Message m : objects) {
-      object_strings.add(this.objectToInsertStatement(columns, m));
+    for (String c : columns) {
+      if (!t.hasColumn(c)) {
+        System.err.println("Invalid insert column %s".formatted(c));
+        return null;
+      }
     }
-    // TODO: parametrize inputs
-    String values_clause = String.join(", ", object_strings);
+    List<Object> params = new ArrayList<>();
+    for (Message o : objects) {
+      for (String c : columns) {
+        FieldDescriptor descriptor = o.getDescriptorForType().findFieldByName(c);
+        if (descriptor == null) {
+          params.add(null);
+        } else {
+          params.add(o.getField(descriptor));
+        }
+      }
+    }
+    String values_string = Str.repeat(columns.length, "?", ", ");
+    String values_clause = Str.repeat(objects.size(), "(%s)".formatted(values_string), ", ");
     String insert_clause = "(%s)".formatted(String.join(", ", columns));
     String query = "INSERT INTO `%s` %s VALUES %s".formatted(table_name, insert_clause, values_clause);
-    QueryResult result = this.query(query);
+    QueryResult result = this.query(query, params);
     if (!result.success()) {
       return null;
     }
-    List<Long> generated_keys = new ArrayList<>();
+    List<Integer> generated_keys = new ArrayList<>();
     try {
-      if (result.result().next()) {
-        generated_keys.add(result.result().getLong(1));
+      ResultSet rs = result.result();
+      if (rs.next()) {
+        generated_keys.add(rs.getInt(1));
+        // because jdbc is fucking stupid we have to infer the other keys
+        // https://docs.oracle.com/javadb/10.10.1.2/ref/crefjavstateautogen.html
+        for (int i = 1; i < result.rows(); i++) {
+          generated_keys.add(generated_keys.get(0) + i);
+        }
       }
     } catch (Exception e) {
       System.err.println("Error with results when getting generated keys: " + e.toString());
     }
     return new InsertResult(result.rows(), generated_keys);
-  }
-
-  private String objectToInsertStatement(String[] columns, Message object) {
-    List<String> columns_strings = new ArrayList<>();
-    for (String column : columns) {
-      FieldDescriptor descriptor = object.getDescriptorForType().findFieldByName(column);
-      if (descriptor == null) {
-        columns_strings.add("null");
-      } else {
-        columns_strings.add(DatabaseConnection.fieldToString(object.getField(descriptor)));
-      }
-    }
-    return "(%s)".formatted(String.join(", ", columns_strings));
-  }
-
-  private static String fieldToString(Object field) {
-    return switch (field) {
-      case String s -> "\"%s\"".formatted(field.toString());
-      default -> field.toString();
-    };
   }
 
   public boolean ping() {
@@ -180,6 +182,7 @@ public class DatabaseConnection {
   }
 
   public Row row(String table_name, String column_name, Object param, boolean check_table_name) {
+    // TODO: support sort clause
     if (check_table_name && !DatabaseConnection.isDataTable(table_name)) {
       return null;
     }
@@ -192,14 +195,16 @@ public class DatabaseConnection {
     List<Row> rows = Row.formRows(result.result());
     if (rows.size() < 1) {
       return null;
-    } else if (rows.size() > 1) {
-      // option to return something other than first one?
     }
     return rows.get(0);
   }
 
   public QueryResult query(String q) {
     return this.query(q, new Object[] {});
+  }
+
+  public QueryResult query(String q, List<Object> params) {
+    return this.query(q, params.toArray());
   }
 
   public QueryResult query(String q, Object[] params) {

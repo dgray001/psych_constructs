@@ -1,5 +1,5 @@
 
-v0.1.9 Initial CRUD interface
+v0.1.10 Parametrize inputs
 
 
 ### Backend
