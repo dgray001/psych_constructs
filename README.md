@@ -1,5 +1,5 @@
 
-v0.1.12 Abstract out api request and response objects
+v0.1.13 Construct read api
 
 
 ### Backend

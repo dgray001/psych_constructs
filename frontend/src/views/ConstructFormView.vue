@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CreateConstructRequest, CreateConstructResponse } from '../../proto/construct_api';
+import { CreateConstructRequest, CreateConstructResponse, ReadConstructRequest, ReadConstructResponse } from '../../proto/construct_api';
 import { Construct } from '../../proto/construct'
 
 const name = defineModel<string>('name', {default: "default name"})
@@ -21,6 +21,17 @@ const create = async () => {
   const tt = await response.arrayBuffer()
   const response_construct = CreateConstructResponse.fromBinary(new Uint8Array(tt))
   console.log(response_construct.construct?.id?.toString(), response_construct.construct?.name)
+  const read_request: ReadConstructRequest = ReadConstructRequest.create({id: response_construct.construct?.id})
+  const response2 = await fetch('/api/construct/read', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-protobuf'
+    },
+    body: ReadConstructRequest.toBinary(read_request)
+  })
+  const tt2 = await response2.arrayBuffer()
+  const response_construct2 = ReadConstructResponse.fromBinary(new Uint8Array(tt2))
+  console.log(response_construct2.construct?.id?.toString(), response_construct2.construct?.name)
 } 
 </script>
 

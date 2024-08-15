@@ -1,11 +1,13 @@
 
-v0.2: Construct / Measure CRUD
+v0.2: Backend CRUD abstraction
+14: Construct update api
+15: Construct delete api
+16: Construct list api
+17: All construct apis return error messages in response objects
+18: Measure boilerplate CRUD
+19: Add any cleanup or additional abstractions
 
-backend retrieve for construct
-backend update for construct
-backend delete for construct
-backend list for construct
-
+v0.3: Frontend CRUD abstraction
 frontend api abstraction
 frontend table abstraction
 frontend list constructs
@@ -14,9 +16,3 @@ frontend create abstraction
 frontend update abstraction
 frontend delete abstraction
 frontend crud for measure
-
-backend create for measure
-backend retrieve for measure
-backend update for measure
-backend delete for measure
-backend list for measure

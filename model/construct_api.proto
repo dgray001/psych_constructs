@@ -13,3 +13,11 @@ message CreateConstructRequest {
 message CreateConstructResponse {
   optional Construct construct = 1;
 }
+
+message ReadConstructRequest {
+  optional int32 id = 1;
+}
+
+message ReadConstructResponse {
+  optional Construct construct = 1;
+}
