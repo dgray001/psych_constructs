@@ -17,7 +17,7 @@ const create = async () => {
   })
   const tt = await response.arrayBuffer()
   const response_construct = Construct.fromBinary(new Uint8Array(tt))
-  console.log(response_construct.id, response_construct.name)
+  console.log(response_construct.id?.toString(), response_construct.name)
 }
 </script>
 

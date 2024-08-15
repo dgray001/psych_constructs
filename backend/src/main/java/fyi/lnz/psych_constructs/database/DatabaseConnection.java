@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.google.protobuf.Message;
 
 import fyi.lnz.psych_constructs.database.migrations.*;
+import fyi.lnz.psych_constructs.util.ArrU;
 import fyi.lnz.psych_constructs.util.Constants;
 
 record QueryResult(boolean success, ResultSet result, String error) {
@@ -22,6 +23,7 @@ record QueryResult(boolean success, ResultSet result, String error) {
 @Service
 public class DatabaseConnection {
   private Connection connection;
+  private String[] table_names = ArrU.map(Tables.all(), (Table t) -> t.name());
 
   DatabaseConnection() {
     try {
@@ -100,9 +102,23 @@ public class DatabaseConnection {
     return false;
   }
 
-  public void insert(String tableName, List<Message> objects) {
-    // construct description of object
-    // then insert in overloaded
+  public void insert(String table_name, String[] columns, List<Message> objects) {
+    if (columns.length < 1 || objects.size() < 1) {
+      return;
+    }
+    List<String> object_strings = new ArrayList<>();
+    for (Message m : objects) {
+      object_strings.add(this.objectToInsertStatement(columns, m));
+    }
+    String values_clause = String.join(", ", object_strings);
+    String insert_clause = "(%s)".formatted(String.join(", ", columns));
+    String query = "INSERT INTO `%s` %s VALUES %s".formatted(table_name, insert_clause, values_clause);
+
+  }
+
+  private String objectToInsertStatement(String[] columns, Message object) {
+    List<String> columns_strings = new ArrayList<>();
+    return "(%s)".formatted(String.join(", ", columns_strings));
   }
 
   public boolean ping() {
@@ -110,9 +126,9 @@ public class DatabaseConnection {
     return result.success();
   }
 
-  public Row row(String tableName, String columnName, Object param) {
+  public Row row(String table_name, String column_name, Object param) {
     QueryResult result = this.query(
-        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(tableName, columnName),
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(table_name, column_name),
         new Object[] { param });
     if (!result.success()) {
       return null;
