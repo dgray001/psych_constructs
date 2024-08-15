@@ -35,7 +35,7 @@ public class ConstructController {
       return CreateConstructResponse.newBuilder().setConstruct(created).build().toByteArray();
     } catch (Exception e) {
       System.err.println("Error in create construct api: " + e.toString());
-      return null;
+      return CreateConstructResponse.newBuilder().setErrorMessage(e.toString()).build().toByteArray();
     }
   }
 
@@ -47,7 +47,7 @@ public class ConstructController {
       return ReadConstructResponse.newBuilder().setConstruct(read).build().toByteArray();
     } catch (Exception e) {
       System.err.println("Error in read construct api: " + e.toString());
-      return null;
+      return ReadConstructResponse.newBuilder().setErrorMessage(e.toString()).build().toByteArray();
     }
   }
 
@@ -59,7 +59,7 @@ public class ConstructController {
       return UpdateConstructResponse.newBuilder().setConstruct(updated).build().toByteArray();
     } catch (Exception e) {
       System.err.println("Error in update construct api: " + e.toString());
-      return null;
+      return UpdateConstructResponse.newBuilder().setErrorMessage(e.toString()).build().toByteArray();
     }
   }
 
@@ -71,7 +71,7 @@ public class ConstructController {
       return DeleteConstructResponse.newBuilder().build().toByteArray();
     } catch (Exception e) {
       System.err.println("Error in update construct api: " + e.toString());
-      return null;
+      return DeleteConstructResponse.newBuilder().setErrorMessage(e.toString()).build().toByteArray();
     }
   }
 }

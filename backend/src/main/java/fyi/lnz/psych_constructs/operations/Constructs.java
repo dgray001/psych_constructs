@@ -3,7 +3,6 @@ package fyi.lnz.psych_constructs.operations;
 import org.springframework.stereotype.Component;
 
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
-import fyi.lnz.psych_constructs.database.InsertResult;
 import fyi.lnz.psych_constructs.database.Row;
 import fyi.lnz.psych_constructs.database.UpdateResult;
 import proto.Construct;
@@ -70,7 +69,7 @@ public class Constructs implements Crud<Construct> {
     return this.db().row(this.tableName(), this.idColumn(), id);
   }
 
-  public Construct _update(Construct c) {
+  public Construct _update(Construct c) throws Exception {
     UpdateResult result = this.db().update(this.tableName(), this.idColumn(), c.getId(), this.insertColumns(true), c);
     if (result == null || result.rows() < 1) {
       return null;

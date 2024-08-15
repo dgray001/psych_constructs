@@ -93,7 +93,12 @@ public class DatabaseConnection {
 
   /** Returns whether input table is one of the defined tables in migrations */
   public static boolean isDataTable(String table_name) {
-    return Arrays.asList(DatabaseConnection.table_names).contains(table_name);
+    for (String n : DatabaseConnection.table_names) {
+      if (n == table_name) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean rowExists(String table_name, String column_name, Object param) {
@@ -147,13 +152,11 @@ public class DatabaseConnection {
   public InsertResult insert(String table_name, String[] columns, List<Message> objects) {
     Table t = Tables.get(table_name);
     if (!DatabaseConnection.isDataTable(table_name) || t == null || columns.length < 1 || objects.size() < 1) {
-      System.err.println("Invalid insert parameters");
-      return null;
+      return new InsertResult("Invalid insert parameters", true);
     }
     for (String c : columns) {
       if (!t.hasColumn(c)) {
-        System.err.println("Invalid insert column %s".formatted(c));
-        return null;
+        return new InsertResult("Invalid insert column %s".formatted(c), true);
       }
     }
     List<Object> params = new ArrayList<>();
@@ -173,7 +176,7 @@ public class DatabaseConnection {
     String query = "INSERT INTO `%s` %s VALUES %s;".formatted(table_name, insert_clause, values_clause);
     QueryResult result = this.query(query, params);
     if (!result.success()) {
-      return null;
+      return new InsertResult(result.error());
     }
     List<Integer> generated_keys = new ArrayList<>();
     try {
@@ -195,17 +198,14 @@ public class DatabaseConnection {
   public UpdateResult update(String table_name, String id_column, Object id, String[] columns, Message object) {
     Table t = Tables.get(table_name);
     if (!DatabaseConnection.isDataTable(table_name) || t == null) {
-      System.err.println("Invalid update table");
-      return null;
+      return new UpdateResult("Invalid update table");
     }
     if (!t.hasColumn(id_column)) {
-      System.err.println("Invalid update id column %s".formatted(id_column));
-      return null;
+      return new UpdateResult("Invalid update id column %s".formatted(id_column));
     }
     for (String c : columns) {
       if (!t.hasColumn(c)) {
-        System.err.println("Invalid update column %s".formatted(c));
-        return null;
+        return new UpdateResult("Invalid update column %s".formatted(c));
       }
     }
     List<Object> params = new ArrayList<>();
@@ -226,7 +226,7 @@ public class DatabaseConnection {
     String query = "UPDATE `%s` SET %s WHERE %s = ? LIMIT 1;".formatted(table_name, set_clause, id_column);
     QueryResult result = this.query(query, params);
     if (!result.success()) {
-      return null;
+      return new UpdateResult(result.error());
     }
     return new UpdateResult(result.rows());
   }

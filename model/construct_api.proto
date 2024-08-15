@@ -13,6 +13,7 @@ message CreateConstructRequest {
 
 message CreateConstructResponse {
   optional Construct construct = 1;
+  optional string error_message = 2;
 }
 
 message ReadConstructRequest {
@@ -21,6 +22,7 @@ message ReadConstructRequest {
 
 message ReadConstructResponse {
   optional Construct construct = 1;
+  optional string error_message = 2;
 }
 
 message UpdateConstructRequest {
@@ -29,6 +31,7 @@ message UpdateConstructRequest {
 
 message UpdateConstructResponse {
   optional Construct construct = 1;
+  optional string error_message = 2;
 }
 
 message DeleteConstructRequest {
@@ -36,6 +39,7 @@ message DeleteConstructRequest {
 }
 
 message DeleteConstructResponse {
+  optional string error_message = 1;
 }
 
 message ListConstructRequest {
@@ -44,4 +48,5 @@ message ListConstructRequest {
 
 message ListConstructResponse {
   repeated Construct constructs = 1;
+  optional string error_message = 2;
 }

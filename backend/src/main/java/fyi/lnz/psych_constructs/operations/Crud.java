@@ -24,14 +24,15 @@ public interface Crud<T extends Message> {
 
   public T convertRow(Row r);
 
-  public default void error(String e) {
+  public default void error(String e) throws Exception {
     System.err.println(e);
     this._error(e);
+    throw new Exception(e.toString());
   }
 
   public void _error(String e);
 
-  public default T create(T t) {
+  public default T create(T t) throws Exception {
     if (this.malformed(t)) {
       this.error("Cannot create because object is malformed");
       return null;
@@ -55,7 +56,7 @@ public interface Crud<T extends Message> {
 
   public String[] insertColumns(boolean updateQuery);
 
-  public default T read(Integer id) {
+  public default T read(Integer id) throws Exception {
     Row r = this.db().row(this.tableName(), this.idColumn(), id);
     if (r == null) {
       this.error("Error reading construct");
@@ -64,7 +65,7 @@ public interface Crud<T extends Message> {
     return this.convertRow(r);
   }
 
-  public default T update(T t) {
+  public default T update(T t) throws Exception {
     if (this.malformed(t)) {
       this.error("Cannot update because object is malformed");
       return null;
@@ -80,11 +81,15 @@ public interface Crud<T extends Message> {
     return this._update(t);
   }
 
-  public T _update(T t);
+  public T _update(T t) throws Exception;
 
-  public default boolean delete(Integer id) {
+  public default boolean delete(Integer id) throws Exception {
     return this.db().delete(this.tableName(), this.idColumn(), id);
   }
+
+  // TODO: Add bulk update
+
+  // TODO: Add bulk delete
 
   public T[] list(Query q);
 }
