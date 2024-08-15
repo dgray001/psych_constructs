@@ -11,18 +11,18 @@ public class Tables {
             "table describing constructs which are labels for some domain of human behavior",
             1,
             new Column[] {
-                new Column("id", "INT", "NOT NULL ", true, true),
-                new Column("name", "VARCHAR(128)", "NOT NULL"),
-                new Column("description", "VARCHAR(1024)", "NOT NULL")
+                new Column("id", "INT", "NOT NULL AUTO_INCREMENT", true, true),
+                new Column("name", "VARCHAR(128)", "NOT NULL", true),
+                new Column("description", "VARCHAR(1024)", "NOT NULL DEFAULT ''")
             }),
         new Table(
             "measure",
             "table describing measures which are models for measuring a particular construct",
             1,
             new Column[] {
-                new Column("id", "INT", "NOT NULL", true, true),
-                new Column("name", "VARCHAR(128)", "NOT NULL"),
-                new Column("description", "VARCHAR(1024)", "NOT NULL"),
+                new Column("id", "INT", "NOT NULL AUTO_INCREMENT", true, true),
+                new Column("name", "VARCHAR(128)", "NOT NULL", true),
+                new Column("description", "VARCHAR(1024)", "NOT NULL DEFAULT ''"),
                 new Column("questions_sorted", "TINYINT(1)", "UNSIGNED ZEROFILL NOT NULL DEFAULT FALSE")
             }),
         new Table(
@@ -30,7 +30,7 @@ public class Tables {
             "table to join constructs and measures together",
             1,
             new Column[] {
-                new Column("id", "INT", "NOT NULL", true, true),
+                new Column("id", "INT", "NOT NULL AUTO_INCREMENT", true, true),
                 new Column("construct_id", "INT", "NOT NULL"),
                 new Column("measure_id", "INT", "NOT NULL")
             }),
@@ -47,7 +47,11 @@ public class Tables {
   }
 }
 
-record Column(String name, String type, String options, boolean primary, boolean unique) {
+record Column(String name, String type, String options, boolean unique, boolean primary) {
+  Column(String name, String type, String options, boolean unique) {
+    this(name, type, options, unique, false);
+  }
+
   Column(String name, String type, String options) {
     this(name, type, options, false, false);
   }

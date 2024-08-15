@@ -1,5 +1,5 @@
 
-v0.1.6 Initial backend insert logic
+v0.1.8 Insert returns generated keys and num rows affected
 
 
 ### Backend

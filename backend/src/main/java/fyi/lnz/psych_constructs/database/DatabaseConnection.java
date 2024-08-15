@@ -6,24 +6,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.google.protobuf.Message;
+import com.google.protobuf.Descriptors.FieldDescriptor;
 
 import fyi.lnz.psych_constructs.database.migrations.*;
 import fyi.lnz.psych_constructs.util.ArrU;
 import fyi.lnz.psych_constructs.util.Constants;
 
-record QueryResult(boolean success, ResultSet result, String error) {
+record QueryResult(boolean success, ResultSet result, Integer rows, String error) {
 }
 
 @Service
 public class DatabaseConnection {
   private Connection connection;
-  private String[] table_names = ArrU.map(Tables.all(), (Table t) -> t.name());
+  private static String[] table_names = ArrU.map(Tables.all(), (Table t) -> t.name());
 
   DatabaseConnection() {
     try {
@@ -47,7 +49,7 @@ public class DatabaseConnection {
     }
     List<String> migrationsRan = new ArrayList<String>();
     for (Migration m : Migrations.all()) {
-      Row row = this.row(Migrations.MIGRATION_TABLE, "name", m.name());
+      Row row = this.row(Migrations.MIGRATION_TABLE, "name", m.name(), false);
       if (row == null) {
         this.query(
             "INSERT INTO `%s` (name, description, query) VALUES (?, ?, ?);".formatted(Migrations.MIGRATION_TABLE),
@@ -72,10 +74,11 @@ public class DatabaseConnection {
     return true;
   }
 
-  public boolean tableExists(String tableName) {
+  /** Returns whether the input table is currenty in the connected database */
+  public boolean tableExists(String table_name) {
     QueryResult result = this.query(
         "SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = ? AND `table_name` = ? LIMIT 1;",
-        new Object[] { Constants.db_name, tableName });
+        new Object[] { Constants.db_name, table_name });
     if (!result.success()) {
       return false;
     }
@@ -87,9 +90,17 @@ public class DatabaseConnection {
     return false;
   }
 
-  public boolean rowExists(String tableName, String columnName, Object param) {
+  /** Returns whether input table is one of the defined tables in migrations */
+  public static boolean isDataTable(String table_name) {
+    return Arrays.asList(DatabaseConnection.table_names).contains(table_name);
+  }
+
+  public boolean rowExists(String table_name, String column_name, Object param) {
+    if (!DatabaseConnection.isDataTable(table_name)) {
+      return false;
+    }
     QueryResult result = this.query(
-        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(tableName, columnName),
+        "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(table_name, column_name),
         new Object[] { param });
     if (!result.success()) {
       return false;
@@ -102,23 +113,61 @@ public class DatabaseConnection {
     return false;
   }
 
-  public void insert(String table_name, String[] columns, List<Message> objects) {
-    if (columns.length < 1 || objects.size() < 1) {
-      return;
+  public InsertResult insert(String table_name, String[] columns, Message object) {
+    List<Message> objects = new ArrayList<>();
+    objects.add(object);
+    return this.insert(table_name, columns, objects);
+  }
+
+  public InsertResult insert(String table_name, String[] columns, Message[] objects) {
+    return this.insert(table_name, columns, List.of(objects));
+  }
+
+  public InsertResult insert(String table_name, String[] columns, List<Message> objects) {
+    if (!DatabaseConnection.isDataTable(table_name) || columns.length < 1 || objects.size() < 1) {
+      return null;
     }
     List<String> object_strings = new ArrayList<>();
     for (Message m : objects) {
       object_strings.add(this.objectToInsertStatement(columns, m));
     }
+    // TODO: parametrize inputs
     String values_clause = String.join(", ", object_strings);
     String insert_clause = "(%s)".formatted(String.join(", ", columns));
     String query = "INSERT INTO `%s` %s VALUES %s".formatted(table_name, insert_clause, values_clause);
-
+    QueryResult result = this.query(query);
+    if (!result.success()) {
+      return null;
+    }
+    List<Long> generated_keys = new ArrayList<>();
+    try {
+      if (result.result().next()) {
+        generated_keys.add(result.result().getLong(1));
+      }
+    } catch (Exception e) {
+      System.err.println("Error with results when getting generated keys: " + e.toString());
+    }
+    return new InsertResult(result.rows(), generated_keys);
   }
 
   private String objectToInsertStatement(String[] columns, Message object) {
     List<String> columns_strings = new ArrayList<>();
+    for (String column : columns) {
+      FieldDescriptor descriptor = object.getDescriptorForType().findFieldByName(column);
+      if (descriptor == null) {
+        columns_strings.add("null");
+      } else {
+        columns_strings.add(DatabaseConnection.fieldToString(object.getField(descriptor)));
+      }
+    }
     return "(%s)".formatted(String.join(", ", columns_strings));
+  }
+
+  private static String fieldToString(Object field) {
+    return switch (field) {
+      case String s -> "\"%s\"".formatted(field.toString());
+      default -> field.toString();
+    };
   }
 
   public boolean ping() {
@@ -127,6 +176,13 @@ public class DatabaseConnection {
   }
 
   public Row row(String table_name, String column_name, Object param) {
+    return this.row(table_name, column_name, param, true);
+  }
+
+  public Row row(String table_name, String column_name, Object param, boolean check_table_name) {
+    if (check_table_name && !DatabaseConnection.isDataTable(table_name)) {
+      return null;
+    }
     QueryResult result = this.query(
         "SELECT * FROM `%s` AS t WHERE `t`.`%s` = ? LIMIT 1;".formatted(table_name, column_name),
         new Object[] { param });
@@ -149,7 +205,7 @@ public class DatabaseConnection {
   public QueryResult query(String q, Object[] params) {
     try {
       this.connection.beginRequest();
-      PreparedStatement ps = this.connection.prepareStatement(q);
+      PreparedStatement ps = this.connection.prepareStatement(q, PreparedStatement.RETURN_GENERATED_KEYS);
       int i = 1;
       for (Object param : params) {
         if (param instanceof Date) {
@@ -167,13 +223,19 @@ public class DatabaseConnection {
         }
       }
       System.out.println(ps.toString());
-      ps.execute();
-      ResultSet result = ps.getResultSet();
+      ResultSet result = null;
+      Integer rows = null;
+      if (ps.execute()) {
+        result = ps.getResultSet();
+      } else {
+        result = ps.getGeneratedKeys();
+        rows = ps.getUpdateCount();
+      }
       this.connection.endRequest();
-      return new QueryResult(true, result, "");
+      return new QueryResult(true, result, rows, "");
     } catch (Exception e) {
       System.err.println("Query `" + q + "` failed with error: " + e.toString());
-      return new QueryResult(false, null, e.toString());
+      return new QueryResult(false, null, null, e.toString());
     }
   }
 }
