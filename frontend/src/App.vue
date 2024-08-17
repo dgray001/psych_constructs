@@ -15,7 +15,7 @@ import AppFooter from './components/AppFooter.vue'
     </div>
 
     <div id="footer" class="size-h size-w">
-      <AppFooter msg = "this is the header" />
+      <AppFooter msg="this is the header" />
     </div>
   </div>
 </template>
@@ -27,7 +27,9 @@ import AppFooter from './components/AppFooter.vue'
   flex-flow: column nowrap;
 }
 
-#header, #body, #footer {
+#header,
+#body,
+#footer {
   --size-w: 100vw;
   overflow: auto;
 }

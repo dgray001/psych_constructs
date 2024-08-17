@@ -9,31 +9,26 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: HomeView
     },
     {
       path: '/construct',
       name: 'construct',
+      // route level code-splitting
+      // this generates a separate chunk (About.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
       component: () => import('../views/ConstructFormView.vue'),
       children: [
         {
           path: 'form',
-          component: () => import('../views/ConstructFormView.vue'),
-        },
-      ],
+          component: () => import('../views/ConstructFormView.vue')
+        }
+      ]
     },
     {
       path: '/:pathMatch(.*)*',
-      component: PageNotFoundView,
-    },
+      component: PageNotFoundView
+    }
   ]
 })
 

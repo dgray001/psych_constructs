@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { ListConstructRequest, ListConstructResponse } from '../../proto/construct_api';
-import { Query } from '../../proto/query';
+import { ListConstructRequest, ListConstructResponse } from '../../proto/construct_api'
+import { Query } from '../../proto/query'
 
-const name = defineModel<string>('name', {default: "default name"})
-const description = defineModel<string>('description', {default: "default description"})
+const name = defineModel<string>('name', { default: 'default name' })
+const description = defineModel<string>('description', { default: 'default description' })
 const create = async () => {
   const request: ListConstructRequest = ListConstructRequest.create({
     query: Query.create({
-      search: '',
+      search: ''
     })
   })
   const response = await fetch('/api/construct/list', {
@@ -19,13 +19,13 @@ const create = async () => {
   })
   const tt = await response.arrayBuffer()
   const response_construct = ListConstructResponse.fromBinary(new Uint8Array(tt))
-  console.log(response_construct);
+  console.log(response_construct)
 }
 </script>
 
 <template>
   <div class="form">
-    <input v-model="name">
+    <input v-model="name" />
     <textarea v-model="description"></textarea>
     <button @click="create">Submit</button>
   </div>
