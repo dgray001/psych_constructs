@@ -1,5 +1,5 @@
 
-v0.2: Backend CRUD abstraction
+v0.2.1: Basic css framework
 
 
 ### Backend

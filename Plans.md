@@ -1,13 +1,12 @@
 
 v0.3: Frontend CRUD abstraction
-1: basic css framework
-2: basic header and footer layout
-3: frontend api util
-4: frontend list abstraction
-5: list constructs view
-6: frontend form abstraction
-7: frontend form field abstraction
-8: frontend create abstraction
+2: Basic header and footer layout
+3: Frontend api util
+4: Frontend list abstraction
+5: List constructs view
+6: Frontend form abstraction
+7: Frontend form field abstraction
+8: Frontend create abstraction
 9: create construct view
 10: frontend update abstraction
 11: update construct

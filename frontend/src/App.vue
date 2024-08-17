@@ -1,24 +1,29 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <AppHeader msg = "this is a header" />
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/construct/form">Construct</RouterLink>
-      </nav>
+  <div id="app">
+    <div id="header">
+      <AppHeader msg = "this is the header" />
     </div>
-  </header>
 
-  <RouterView />
+    <div id="body">
+      <RouterView />
+    </div>
 
-  <AppFooter />
+    <div id="footer">
+      <AppFooter />
+    </div>
+
+  </div>
 </template>
 
 <style scoped>
+#header, #body, #footer {
+  max-width: 100vw;
+  overflow: auto;
+}
 </style>
