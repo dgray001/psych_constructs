@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { provide } from 'vue'
 import { RouterView } from 'vue-router'
 import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/AppFooter.vue'
+import { tableConstruct } from './util/table/construct_table';
+
+provide('table-construct', tableConstruct())
 </script>
 
 <template>

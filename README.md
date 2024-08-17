@@ -1,5 +1,5 @@
 
-v0.2.2: Basic header and footer layout
+v0.2.3: Can pass query to base table
 
 
 ### Backend

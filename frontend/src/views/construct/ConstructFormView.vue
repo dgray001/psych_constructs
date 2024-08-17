@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ListConstructRequest, ListConstructResponse } from '../../proto/construct_api'
-import { Query } from '../../proto/query'
+import { ListConstructRequest, ListConstructResponse } from '../../../proto/construct_api'
+import { Query } from '../../../proto/query'
 
 const name = defineModel<string>('name', { default: 'default name' })
 const description = defineModel<string>('description', { default: 'default description' })
