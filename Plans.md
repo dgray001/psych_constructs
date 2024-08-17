@@ -1,6 +1,5 @@
 
 v0.3: Frontend CRUD abstraction
-2: Basic header and footer layout
 3: Frontend api util
 4: Frontend list abstraction
 5: List constructs view

@@ -1,5 +1,5 @@
 
-v0.2.1: Basic css framework
+v0.2.2: Basic header and footer layout
 
 
 ### Backend

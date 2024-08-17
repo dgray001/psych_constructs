@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-defineProps<{
-  msg: string
-}>()
 </script>
 
 <template>
-  <h1 class="green">{{ msg }}</h1>
+  <div id="wrapper" class="size-max">
+    <div id="title">Psych Constructs</div>
+  </div>
   <nav>
     <RouterLink to="/">Home</RouterLink>
     <RouterLink to="/construct/form">Construct</RouterLink>
@@ -14,7 +13,12 @@ defineProps<{
 </template>
 
 <style scoped>
-* {
-  width: 200vw;
+#wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+
+  #title {
+    font-size: var(--size-title);
+  }
 }
 </style>
