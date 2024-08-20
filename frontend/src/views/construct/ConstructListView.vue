@@ -22,7 +22,7 @@ const click = () => {
   <div class="form">
     <input v-model="data.query.search" />
     <button @click="click">search</button>
-    <BaseTable :query="data.query" :tableable="inject('table-construct')"/>
+    <BaseTable :query="data.query" tableable_key="table-construct"/>
   </div>
 </template>
 

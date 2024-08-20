@@ -39,4 +39,6 @@ public class Constants {
   public final static String api_prefix = "api";
 
   public final static Integer default_query_limit = 50;
+
+  public final static String search_delimiter = "⏢";
 }

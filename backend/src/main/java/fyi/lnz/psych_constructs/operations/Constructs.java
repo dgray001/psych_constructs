@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import fyi.lnz.psych_constructs.database.DatabaseConnection;
 import fyi.lnz.psych_constructs.database.Row;
 import fyi.lnz.psych_constructs.database.UpdateResult;
+import fyi.lnz.psych_constructs.util.Constants;
 import proto.Construct;
 import proto.Query;
 
@@ -82,7 +83,13 @@ public class Constructs implements Crud<Construct> {
 
   public Crud.ListResult<Construct> list(Query q) {
     List<Object> params = new ArrayList<Object>();
-    fyi.lnz.psych_constructs.database.ListResult result = this.db().list(this.tableName(), "", params.toArray());
+    String where_clause = "";
+    if (q != null && q.getSearch() != null && !q.getSearch().isBlank()) {
+      where_clause = "CONCAT(name, '%s', description) LIKE ?".formatted(Constants.search_delimiter);
+      params.add("%%%s%%".formatted(q.getSearch()));
+    }
+    fyi.lnz.psych_constructs.database.ListResult result = this.db().list(this.tableName(), where_clause,
+        params.toArray());
     if (result.error() != null) {
       return new ListResult<Construct>(false, null, result.error());
     }

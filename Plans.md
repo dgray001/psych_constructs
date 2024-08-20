@@ -1,8 +1,5 @@
 
 v0.3: Frontend CRUD abstraction
-3: Frontend api util
-4: Frontend list abstraction
-5: List constructs view
 6: Frontend form abstraction
 7: Frontend form field abstraction
 8: Frontend create abstraction

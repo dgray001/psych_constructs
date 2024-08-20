@@ -1,5 +1,5 @@
 
-v0.2.3: Can pass query to base table
+v0.2.4: Can list constructs
 
 
 ### Backend
