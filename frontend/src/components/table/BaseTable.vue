@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Listable, Tableable } from '@/util/table/tableable';
+import { capitalize } from '@/util/util';
 import type { Query } from 'proto/query';
-import { getCurrentInstance, inject, ref, watch } from 'vue';
+import { inject, ref, watch } from 'vue';
 
 const props = defineProps<{
   query: Query,
@@ -13,7 +14,6 @@ if (!tableable) {
   throw new Error(`Tableable service key not valid: ${props.tableable_key}`)
 }
 
-let query = ref<Query>(props.query)
 let data = ref<Listable[]>([])
 let error = ref<string>('')
 
@@ -34,13 +34,33 @@ watch(() => props.query, async () => {
 </script>
 
 <template>
-  <div>base table: {{ query.search }}</div>
-  <ul v-if="!error">
-    <li v-for="d in data" :key="d.id">
-      {{ d.id }}: {{ d.toString() }}
-    </li>
-  </ul>
-  <div v-else>{{ error }}</div>
+  <table v-if="tableable">
+    <caption>{{ capitalize(tableable.name) }} Table</caption>
+    <thead>
+      <tr>
+        <th v-for="c in tableable.cols" :key="c" scope="col">
+          {{ c }}
+        </th>
+      </tr>
+    </thead>
+    <tbody v-if="!error">
+      <tr v-for="d in data" :key="d.id">
+        <td v-for="r in tableable.row(d)" :key="r">{{ r }}</td>
+      </tr>
+    </tbody>
+    <div v-else>{{ error }}</div>
+  </table>
 </template>
 
-<style scoped></style>
+<style scoped>
+table {
+  border-collapse: collapse;
+  border: 3px solid black;
+  table-layout: fixed;
+  width: 100%;
+}
+
+thead th:nth-child(1) {
+  width: 25%;
+}
+</style>

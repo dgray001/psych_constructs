@@ -7,11 +7,13 @@ export declare interface ListResponse<T> {
 }
 
 export declare interface Listable {
-  id: number;
+  id?: number;
 }
 
 /** Base interface for list and table implementations */
 export declare interface Tableable<T extends Listable> {
   name: string;
-  list: (query: Query) => Promise<ListResponse<T>>
+  list: (query: Query) => Promise<ListResponse<T>>;
+  cols: string[];
+  row: (t: T) => string[];
 }

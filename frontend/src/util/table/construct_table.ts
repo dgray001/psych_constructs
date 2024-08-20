@@ -27,5 +27,12 @@ export function tableConstruct(): Tableable<Construct> {
         data: response.data?.constructs,
       };
     },
+    cols: ["Name", "Description"],
+    row: (construct: Construct): string[] => {
+      return [
+        construct.name ?? '',
+        construct.description ?? '',
+      ];
+    },
   };
 }

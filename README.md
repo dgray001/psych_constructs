@@ -1,5 +1,5 @@
 
-v0.2.4: Can list constructs
+v0.2.5: Tableable is useable
 
 
 ### Backend
