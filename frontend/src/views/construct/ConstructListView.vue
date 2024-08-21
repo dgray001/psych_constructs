@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { inject, ref } from 'vue'
-import BaseTable from '@/components/table/BaseTable.vue';
+import { ref } from 'vue'
+import BaseTable from '@/components/table/BaseTable.vue'
 import { Query } from '../../../proto/query'
-
-const query = defineModel<Query>('query', { default: Query.create({
-  search: '',
-})})
 
 const data = ref({
   query: Query.create({
-    search: '',
+    search: ''
   })
 })
 
@@ -22,8 +18,9 @@ const click = () => {
   <div class="form">
     <input v-model="data.query.search" />
     <button @click="click">search</button>
-    <BaseTable :query="data.query" tableable_key="table-construct"/>
+    <BaseTable :query="data.query" tableable_key="table-construct" />
   </div>
+  <RouterView />
 </template>
 
 <style>

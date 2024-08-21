@@ -1,6 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import PageNotFoundView from '../views/PageNotFoundView.vue'
+import HomeView from '@/views/HomeView.vue'
+import PageNotFoundView from '@/views/PageNotFoundView.vue'
+import ConstructListView from '@/views/construct/ConstructListView.vue'
+import ConstructFormView from '@/views/construct/ConstructFormView.vue'
+import ConstructView from '@/views/construct/ConstructView.vue'
 
 const router = createRouter({
   //history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,14 +17,15 @@ const router = createRouter({
     {
       path: '/construct',
       name: 'construct',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/construct/ConstructListView.vue'),
+      component: ConstructView,
       children: [
         {
+          path: 'list',
+          component: ConstructListView
+        },
+        {
           path: 'form',
-          component: () => import('../views/construct/ConstructFormView.vue')
+          component: ConstructFormView
         }
       ]
     },
